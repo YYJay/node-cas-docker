@@ -30,6 +30,17 @@ const sessionOptions = {
 
 // App
 const app = express();
+
+app.all('*', function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "X-Requested-With");
+  res.header("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS");
+  // res.header("X-Powered-By",' 3.2.1')
+  // res.header("Content-Type", "application/json;charset=utf-8");
+  next();
+});
+
+
 if (USE_GZIP) {
   app.use(compression());
 }
@@ -45,14 +56,14 @@ if (process.env.HADOOP_API_URL) {
   app.use(proxy(filter, { target: process.env.HADOOP_API_URL, changeOrigin: true }))
 }
 
-if (process.env.CM_URL) {
-  const filter = (pathname, req) => (
-    pathname.match(/^\/api\/v14\/clusters\/cluster\/services\/yarn\/config/) &&
-      req.method === 'GET'
-  )
+// if (process.env.CM_URL) {
+//   const filter = (pathname, req) => (
+//     pathname.match(/^\/api\/v14\/clusters\/cluster\/services\/yarn\/config/) &&
+//       req.method === 'GET'
+//   )
 
-  app.use(proxy(filter, { target: process.env.CM_URL, changeOrigin: true }))
-}
+//   app.use(proxy(filter, { target: process.env.CM_URL, changeOrigin: true }))
+// }
 
 if (USE_CAS) {
   app.use((req, res, next) => {
